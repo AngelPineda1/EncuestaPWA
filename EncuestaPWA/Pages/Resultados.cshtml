@@ -1,0 +1,47 @@
+﻿@page
+@{
+    Layout = "_LayoutEncuesta";
+}
+
+<h1>Resultados de la encuesta de satisfacción</h1>
+<section class="resultados">
+    <div id="chart"></div>
+    <div>
+        <h2>Total de encuestas:</h2>
+        <p id="total">0</p>
+        <h2>Puntuación del cliente:</h2>
+        <p id="puntuacion">0</p>
+    </div>
+</section>
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+<script>
+
+    google.charts.load('current', { 'packages': ['bar'], 'language': 'es' });
+    google.charts.setOnLoadCallback(drawChart);
+
+    function drawChart() {
+      
+        var data = google.visualization.arrayToDataTable([
+            ["Element", "Density", { role: "style" }],
+            ["Copper", 8.94, "#b87333"],
+            ["Silver", 10.49, "silver"],
+            ["Gold", 19.30, "gold"],
+            ["Platinum", 21.45, "color: #e5e4e2"]
+        ]);
+
+        var options = {
+            chart: {
+                title: 'Resultados de la encuesta',
+                subtitle: 'Agrupada por criterios',
+            },
+            bars: 'horizontal'
+        };
+
+        var chart = new google.charts.Bar(document.getElementById('chart'));
+
+        chart.draw(data, google.charts.Bar.convertOptions(options));
+    }
+
+
+</script>

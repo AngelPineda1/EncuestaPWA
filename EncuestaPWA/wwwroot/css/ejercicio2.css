@@ -1,0 +1,65 @@
+﻿﻿html, body {
+    padding: 0;
+    margin: 0;
+    height: 100%;
+    width: 100%;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+
+main {
+    text-align: center;
+    height: 200%;
+    padding: 0;
+    margin: 0;
+    border:30px solid transparent;
+    border-image: linear-gradient(to bottom, #3acfd5 0%, #3a4ed5 100%) 1;
+}
+
+    main input {
+        background: #3a4ed5;
+        color: white;
+        padding: 10px 30px;
+        font-size: larger;
+    }
+
+    main h1 {
+        color: #3a4ed5;
+        margin: 40px;
+    }
+
+.escala {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    width: 60%;
+    gap: 10px;
+    text-align: center;
+    margin: 20px auto;
+}
+
+    .escala img {
+        width: 100%;
+    }
+
+main p {
+    font-size: 30pt;
+    text-align: center;
+}
+
+
+.resultados {
+    padding: 10px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    min-height: 500px;
+}
+
+img {
+    opacity: .5;
+}
+
+
+.selected {
+    opacity: 1;
+}

@@ -1,0 +1,23 @@
+﻿﻿
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Encuesta PWA</title>
+    <meta name="viewport" content="width=device-width" />
+    <link href="~/css/estilos.css" rel="stylesheet" />
+    <link rel="manifest" href="/manifest.json">
+
+</head>
+<body>
+    <main>
+        @RenderBody()
+    </main>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/serviceworker.js');
+        }
+    </script>
+</body>
+</html>

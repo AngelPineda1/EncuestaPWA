@@ -1,0 +1,30 @@
+﻿@page
+@{
+    Layout = "_LayoutEncuesta";
+
+}
+
+<h1>Encuesta de Satisfacción</h1>
+@* 
+<p id="loader">
+    <img height="50" src="https://www.wpfaster.org/wp-content/uploads/2013/06/loading-gif.gif" />
+</p> *@
+
+<p id="pregunta">
+    ¿Para qué sirve hacer encuestas de satisfacción del cliente?
+</p>
+<div class="escala">
+    <img data-valor="1"  class="muymalo " src="~/img/muymalo.png" />
+    <img data-valor="2" class="malo" src="~/img/malo.png" />
+    <img data-valor="3" class="regular" src="~/img/regular.png" />
+    <img data-valor="4" class="bueno" src="~/img/bueno.png" />
+    <img data-valor="5" class="excelente" src="~/img/excelente.png" />
+    <label>Muy malo</label>
+    <label>Malo</label>
+    <label>Regular</label>
+    <label>Bueno</label>
+    <label>Excelente</label>
+</div>
+<input id="btn" type="button" value="SIGUIENTE" />
+<input id="btn" type="button" value="TERMINAR" />
+
