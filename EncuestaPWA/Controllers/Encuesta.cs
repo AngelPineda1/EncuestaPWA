@@ -1,4 +1,4 @@
-﻿using EncuestaPWA.Models.DTOs;
+using EncuestaPWA.Models.DTOs;
 using EncuestaPWA.Models.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -8,7 +8,7 @@ namespace EncuestaPWA.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class EncuestaController : ControllerBase
+    public class EncuestaController : ControllerBase  
     {
         public EncuestaController(ItesrcneIntegracionContext context)
         {

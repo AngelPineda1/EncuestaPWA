@@ -1,20 +1,35 @@
-﻿@page
+@page
 @{
     Layout = "_LayoutEncuesta";
 
 }
+<style>
+    body.loading #pregunta, body.loading #btn, body.loading .escala,
+    body.loading .escala img, body.loading .escala label {
+        display: none;
+    }
+
+    #loader {
+        display: none;
+    }
+
+    body.loading #loader {
+        display: block;
+    }
+
+</style>
 
 <h1>Encuesta de Satisfacción</h1>
-@* 
+
 <p id="loader">
     <img height="50" src="https://www.wpfaster.org/wp-content/uploads/2013/06/loading-gif.gif" />
-</p> *@
+</p>
 
 <p id="pregunta">
     ¿Para qué sirve hacer encuestas de satisfacción del cliente?
 </p>
-<div class="escala">
-    <img data-valor="1"  class="muymalo " src="~/img/muymalo.png" />
+<div class="escala" >
+    <img data-valor="1" class="muymalo " src="~/img/muymalo.png" />
     <img data-valor="2" class="malo" src="~/img/malo.png" />
     <img data-valor="3" class="regular" src="~/img/regular.png" />
     <img data-valor="4" class="bueno" src="~/img/bueno.png" />
@@ -26,5 +41,35 @@
     <label>Excelente</label>
 </div>
 <input id="btn" type="button" value="SIGUIENTE" />
-<input id="btn" type="button" value="TERMINAR" />
+<script>
+    let btn = document.getElementById("btn");
+    let pregunta = document.getElementById("pregunta");
+    let escala = document.querySelector(".escala");
+    let loader = document.getElementById("loader");
 
+    let preguntas = [];
+    let actual = 0;
+    async function cargarPreguntas() {
+        try {
+
+            document.body.classList.add("loading");
+            let response = await fetch("api/encuesta");
+            if (response.ok) {
+                preguntas = await response.json();
+               
+                document.body.classList.remove("loading");
+               
+                mostrarPregunta();
+            }
+        } catch (e) {
+            alert("No se pudo descargar: " + e);
+        }
+    };
+
+    function mostrarPregunta() {
+        let preg = preguntas[actual];
+        pregunta.textContent = preg.pregunta;
+    }
+    cargarPreguntas();
+
+</script>
