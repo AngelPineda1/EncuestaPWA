@@ -28,7 +28,7 @@
 <p id="pregunta">
     ¿Para qué sirve hacer encuestas de satisfacción del cliente?
 </p>
-<div class="escala" >
+<div class="escala">
     <img data-valor="1" class="muymalo " src="~/img/muymalo.png" />
     <img data-valor="2" class="malo" src="~/img/malo.png" />
     <img data-valor="3" class="regular" src="~/img/regular.png" />
@@ -47,8 +47,51 @@
     let escala = document.querySelector(".escala");
     let loader = document.getElementById("loader");
 
-    let preguntas = [];
+    let preguntas = [], respuestas = [];
     let actual = 0;
+    let respuestaSeleccionada;
+
+    btn.addEventListener('click', function () {
+
+        if (respuestaSeleccionada) {
+            let obj = {
+                id: preguntas[actual].id,
+                valor: respuestaSeleccionada.dataset.valor
+            }
+            respuestas.push(obj);
+
+            actual++;
+            if (actual == preguntas.length) {
+                enviarApi();
+                return;
+            }
+            if (actual == preguntas.length - 1) {
+                btn.value = "TERMINAR";
+            }
+            mostrarPregunta();
+
+
+
+        }
+        else {
+            alert("Seleccione una respuesta");
+        }
+
+
+    });
+
+    document.querySelector(".escala").addEventListener("click", function (e) {
+
+        if (e.target.dataset.valor) {
+            if (respuestaSeleccionada) {
+                respuestaSeleccionada.classList.remove("selected");
+
+            }
+            respuestaSeleccionada = e.target;
+            respuestaSeleccionada.classList.add("selected");
+        }
+    })
+
     async function cargarPreguntas() {
         try {
 
@@ -56,9 +99,9 @@
             let response = await fetch("api/encuesta");
             if (response.ok) {
                 preguntas = await response.json();
-               
+
                 document.body.classList.remove("loading");
-               
+
                 mostrarPregunta();
             }
         } catch (e) {
@@ -69,7 +112,21 @@
     function mostrarPregunta() {
         let preg = preguntas[actual];
         pregunta.textContent = preg.pregunta;
+        respuestaSeleccionada.classList.remove("selected");
+        respuestaSeleccionada = null;
     }
     cargarPreguntas();
+
+    async function enviarApi() {
+        document.body.classList.add("loading");
+        let response = await fetch("api/encuesta/", {
+            method: "post",
+            body: JSON.stringify(respuestas),
+            headers: {
+                "content-type": "application/json"
+            }
+        });
+        //pendiente
+    }
 
 </script>
