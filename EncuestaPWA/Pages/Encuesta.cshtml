@@ -22,7 +22,7 @@
 <h1>Encuesta de Satisfacción</h1>
 
 <p id="loader">
-    <img height="50" src="https://www.wpfaster.org/wp-content/uploads/2013/06/loading-gif.gif" />
+    <img height="50" src="~/img/gif.gif" />
 </p>
 
 <p id="pregunta">
@@ -112,8 +112,11 @@
     function mostrarPregunta() {
         let preg = preguntas[actual];
         pregunta.textContent = preg.pregunta;
-        respuestaSeleccionada.classList.remove("selected");
-        respuestaSeleccionada = null;
+        if (respuestaSeleccionada) {
+
+            respuestaSeleccionada.classList.remove("selected");
+            respuestaSeleccionada = null;
+        }
     }
     cargarPreguntas();
 
@@ -127,6 +130,9 @@
             }
         });
         //pendiente
+        if (response.ok) {
+            window.location.replace("/Agradecimiento");
+        }
     }
 
 </script>
