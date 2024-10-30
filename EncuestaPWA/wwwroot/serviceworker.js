@@ -7,6 +7,7 @@ let cacheName = "encuestaCacheV1";
 
 self.addEventListener("install", function (e) {
   e.waitUntil(caches.open(cacheName).add("api/encuesta"));
+  createDatabase();
 });
 
 
@@ -28,7 +29,7 @@ self.addEventListener('fetch', event => {
 
 async function networkIndexDbFallBack(req) {
   try {
-    let resp=await fetc(req);
+    let resp = await fetc(req);
     return resp;
   } catch (e) {
     //guaradr en indexDb y regresar ok
@@ -232,7 +233,19 @@ async function networkCacheRace(req) {
 //funciones indexdb
 
 function createDatabase() {
+  let openRequest = indexedDB.open("encuesta", 1);
 
+  openRequest.onupgradeneeded = function () {
+    let db = openRequest.result;
+    db.createObjectStore('respuestas', { autoincrement: true });
+  }
+
+  openRequest.onerror = function () {
+    console.log("Error", openRequest.error);
+  }
+
+  openRequest.onsuccess = function () {
+  }
 }
 function addToDatabase(obj) {
 
