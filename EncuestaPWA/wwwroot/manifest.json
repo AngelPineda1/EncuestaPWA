@@ -1,4 +1,4 @@
-﻿{
+{
   "name": "Encuesta PWA",
   "short_name": "App de Encuestas",
   "description": "Una aplicación web progresiva para realizar una encuesta de satisfacción.",
@@ -6,17 +6,17 @@
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#ffcc00",
-  "icons": [
-    {
-      "src": "imgs/icono-128.png",
-      "sizes": "128x128",
-      "type": "image/png"
-    },
-    {
-      "src": "imgs/icono-512.png",
-      "sizes": "512x512",
-      "type": "image/png"
-    }
-  ],
+  //"icons": [
+  //  {
+  //    "src": "imgs/icono-128.png",
+  //    "sizes": "128x128",
+  //    "type": "image/png"
+  //  },
+  //  {
+  //    "src": "imgs/icono-512.png",
+  //    "sizes": "512x512",
+  //    "type": "image/png"
+  //  }
+  //],
   "scope": "/"
 }

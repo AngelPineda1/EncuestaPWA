@@ -6,12 +6,16 @@ let cacheName = "encuestaCacheV1";
 
 
 self.addEventListener("install", function (e) {
-  e.waitUntil(caches.open(cacheName).add("api/encuesta"));
+  e.waitUntil(precache());
   createDatabase();
 });
 
 
+async function precache() {
+  let cache = await caches.open(cacheName);
+  await cache.add("api/encuesta");
 
+}
 
 self.addEventListener('fetch', event => {
 
@@ -29,10 +33,15 @@ self.addEventListener('fetch', event => {
 
 async function networkIndexDbFallBack(req) {
   try {
-    let resp = await fetc(req);
+    let resp = await fetch(req);
     return resp;
   } catch (e) {
-    //guaradr en indexDb y regresar ok
+    let res = req.json();
+    addToDatabase(res);
+    //registrarme a un sync para que me avise cuando regrese la conexion
+
+    self.registration.sync.register("enviar-respuestas");
+    return new Response({ status: 200 });
   }
 }
 
@@ -233,7 +242,7 @@ async function networkCacheRace(req) {
 //funciones indexdb
 
 function createDatabase() {
-  let openRequest = indexedDB.open("encuesta", 1);
+  let openRequest = indexedDB.open("encuestas", 1);
 
   openRequest.onupgradeneeded = function () {
     let db = openRequest.result;
@@ -248,13 +257,35 @@ function createDatabase() {
   }
 }
 function addToDatabase(obj) {
+  let openRequest = indexedDB.open("encuestas", 1);
+  openRequest.onsuccess = function () {
+    let transaction = openRequest.transaction("respuestas", "readwrite");
+    transaction.add(obj);
 
+  }
 }
 
 function getFromDatabase() {
-
+  let openRequest = indexedDB.open("encuestas", 1);
+  openRequest.onsuccess = function () {
+    let transaction = openRequest.transaction("respuestas", "readonly");
+    let os = transaction.objectStore("respuestas");
+    let datos = os.getAll();
+    datos.osuccess = function () {
+      return datos.result;
+    }
+  }
 }
 
-function deleteFromDatabase(id) {
 
+function deleteFromDatabase(id) {
+  let openRequest = indexedDB.open("encuestas", 1);
+  openRequest.onsuccess = function () {
+    let transaction = openRequest.transaction("respuestas", "readwrite");
+    const os = transaction.objectStore("respuestas");
+    const res = os.delete(id);
+    res.onsuccess = function () {
+      console.log("eliminado");
+    }
+  }
 }
