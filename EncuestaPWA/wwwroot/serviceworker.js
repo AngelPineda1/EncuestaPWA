@@ -16,10 +16,38 @@ async function precache() {
   await cache.add("api/encuesta");
 
 }
+self.addEventListener("sync", function (event) {
+  if (event.tag == "enviar-respuestas") {
+    event.waitUntil(enviarRespuestasGuardadas)
+  }
+});
+async function enviarRespuestasGuardadas() {
+  try {
+    const guardadas = await getFromDatabase(); // Espera los datos de IndexedDB
+    if (guardadas.length > 0) {
+      for (let resp of guardadas) {
+        let response = await fetch("api/encuesta/", {
+          method: "post",
+          body: JSON.stringify(resp.Value), // Cambiado para enviar el objeto completo
+          headers: {
+            "content-type": "application/json"
+          }
+        });
+        if (response.ok) {
+          deleteFromDatabase(resp.Key); // Elimina la respuesta enviada exitosamente
+        } else {
+          break; // Si falla una respuesta, detener el ciclo
+        }
+      }
+    }
+  } catch (error) {
+    console.error("Error al enviar respuestas guardadas:", error);
+  }
+}
 
 self.addEventListener('fetch', event => {
 
-  if (event.request.method == "post" && event.request.url.includes("api/encuesta")) {
+  if (event.request.method == "POST" && event.request.url.includes("api/encuesta")) {
     event.respondWith(networkIndexDbFallBack(event.request));
   }
   else if (event.request.url.includes("api/encuesta")) {
@@ -27,20 +55,21 @@ self.addEventListener('fetch', event => {
 
   } else {
 
-    event.respondWith(networkOnly(event.request));
+    event.respondWith(networkFirst(event.request));
   }
 });
 
 async function networkIndexDbFallBack(req) {
+  let clon = req.clone();
   try {
     let resp = await fetch(req);
     return resp;
   } catch (e) {
-    let res = req.json();
+    let res = await clon.json();
     addToDatabase(res);
     //registrarme a un sync para que me avise cuando regrese la conexion
 
-    self.registration.sync.register("enviar-respuestas");
+    await self.registration.sync.register("enviar-respuestas");
     return new Response({ status: 200 });
   }
 }
@@ -140,6 +169,7 @@ let channel = new BroadcastChannel("refreshChannel")
 
 async function staleThenRevalidate(req) {
   try {
+
     let cache = await caches.open(cacheName);
     let cachedResponse = await cache.match(req);
 
@@ -177,6 +207,7 @@ let maxage = 24 * 60 * 60 * 1000;
 
 async function timeBasedCache(req) {
   try {
+
     let cache = await caches.open(cacheName);
     let cachedResponse = await cache.match(req);
 
@@ -246,7 +277,7 @@ function createDatabase() {
 
   openRequest.onupgradeneeded = function () {
     let db = openRequest.result;
-    db.createObjectStore('respuestas', { autoincrement: true });
+    db.createObjectStore('respuestas', { keyPath: "id", autoIncrement: true });
   }
 
   openRequest.onerror = function () {
@@ -259,22 +290,31 @@ function createDatabase() {
 function addToDatabase(obj) {
   let openRequest = indexedDB.open("encuestas", 1);
   openRequest.onsuccess = function () {
-    let transaction = openRequest.transaction("respuestas", "readwrite");
-    transaction.add(obj);
-
-  }
+    let db = openRequest.result;
+    let transaction = db.transaction("respuestas", "readwrite");
+    let respuestasStore = transaction.objectStore("respuestas");
+    respuestasStore.add(obj);
+    transaction.oncomplete = () => console.log("Respuesta guardada en IndexedDB");
+  };
+  openRequest.onerror = () => console.error("Error al abrir IndexedDB");
 }
 
-function getFromDatabase() {
-  let openRequest = indexedDB.open("encuestas", 1);
-  openRequest.onsuccess = function () {
-    let transaction = openRequest.transaction("respuestas", "readonly");
-    let os = transaction.objectStore("respuestas");
-    let datos = os.getAll();
-    datos.osuccess = function () {
-      return datos.result;
+
+async function getFromDatabase() {
+  let promise = new Promise(function () {
+
+    let openRequest = indexedDB.open("encuestas", 1);
+    openRequest.onsuccess = function () {
+      let transaction = openRequest.transaction("respuestas", "readonly");
+      let os = transaction.objectStore("respuestas");
+      let datos = os.getAll();
+      datos.osuccess = function () {
+        return datos.result;
+      }
     }
-  }
+  }).then(x => {
+    return x;
+  });
 }
 
 
